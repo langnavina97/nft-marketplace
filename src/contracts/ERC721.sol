@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+import "./ERC165.sol";
+import "./interfaces/IERC721.sol";
+
 /*  
     a. NFT to point to an address
     b. Keep track of the token ids
@@ -9,18 +12,12 @@ pragma solidity ^0.8.11;
     e. Create an event that emits a transfer log - contract address, where it is being minted to, the id 
     */
 
-contract ERC721 {
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
-    event Approval(
+contract ERC721 is ERC165, IERC721 {
+    /*event Approval(
         address indexed owner,
         address indexed approved,
         uint256 indexed tokenId
-    );
+    );*/
 
     // Mapping from token id to the owner
     mapping(uint256 => address) private _tokenOwner;
@@ -31,11 +28,15 @@ contract ERC721 {
     // Mapping from tokenId to approved addresses
     mapping(uint256 => address) private _tokenApprovals;
 
-    /// @notice Count all NFTs assigned to an owner
-    /// @dev NFTs assigned to the zero address are considered invalid, and this
-    ///  function throws for queries about the zero address.
-    /// @param _owner An address for whom to query the balance
-    /// @return The number of NFTs owned by `_owner`, possibly zero
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256(
+                    "balanceOf(bytes4)^ownerOf(bytes4)^transferFrom(bytes4)"
+                )
+            )
+        );
+    }
 
     function balanceOf(address _owner) public view returns (uint256) {
         require(_owner != address(0), "Owner query for non-existent token");
@@ -47,7 +48,7 @@ contract ERC721 {
     ///  about them do throw.
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
-    function ownerOf(uint256 _tokenId) public view returns (address) {
+    function ownerOf(uint256 _tokenId) public view override returns (address) {
         require(
             _tokenOwner[_tokenId] != address(0),
             "Owner query for non-existent token"
@@ -105,23 +106,30 @@ contract ERC721 {
         address _from,
         address _to,
         uint256 _tokenId
-    ) public {
-        require(isApprovedOrOwner(msg.sender, _tokenId));
+    ) public override {
+        //require(isApprovedOrOwner(msg.sender, _tokenId));
         _transferFrom(_from, _to, _tokenId);
     }
 
-    function approve(address _to, uint tokenId) public {
+    /*function approve(address _to, uint256 tokenId) public {
         address owner = ownerOf(tokenId);
-        require(owner == _to, 'Aprroval to current owner';
-        require(msg.sender == owner, 'Current caller is not the owner of the token');
+        require(owner == _to, "Aprroval to current owner");
+        require(
+            msg.sender == owner,
+            "Current caller is not the owner of the token"
+        );
         _tokenApprovals[tokenId] = _to;
 
         emit Approval(owner, _to, tokenId);
-    } 
+    }
 
-    function isApprovedOrOwner(address spender, uint tokenId) internal view returns(bool) {
+    function isApprovedOrOwner(address spender, uint256 tokenId)
+        internal
+        view
+        returns (bool)
+    {
         address owner = ownerOf(tokenId);
         // || getApproved(spender) - does not exist here, exists in openzeppelin
         return (spender == owner);
-    }
+    }*/
 }

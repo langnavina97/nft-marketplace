@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+import "./interfaces/IERC721Enumerable.sol";
+
 import "./ERC721.sol";
 
-contract ERC721Enumerable is ERC721 {
+contract ERC721Enumerable is ERC721, IERC721Enumerable {
     uint256[] private _allTokens;
 
     // mapping from tokenId to position in _allToken array
@@ -15,10 +17,17 @@ contract ERC721Enumerable is ERC721 {
     // mapping from token ID to index of the owner tokens list
     mapping(uint256 => uint256) private _ownedTokenIndex;
 
-    /// @notice Count NFTs tracked by this contract
-    /// @return A count of valid NFTs tracked by this contract, where each one of
-    ///  them has an assigned and queryable owner not equal to the zero address
-    function totalSupply() public view returns (uint256) {
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256("totalSupply(bytes4)") ^
+                    keccak256("tokenByIndex(bytes4)") ^
+                    keccak256("tokenOfOwnerByIndex(bytes4)")
+            )
+        );
+    }
+
+    function totalSupply() public view override returns (uint256) {
         return _allTokens.length;
     }
 
@@ -39,7 +48,12 @@ contract ERC721Enumerable is ERC721 {
         _ownedTokenIndex[tokenId] = _ownedTokens[to].length;
     }
 
-    function tokenByIndex(uint256 index) public view returns (uint256) {
+    function tokenByIndex(uint256 index)
+        public
+        view
+        override
+        returns (uint256)
+    {
         require(index < totalSupply(), "Global index is out of bounds!");
         return _allTokens[index];
     }
@@ -47,6 +61,7 @@ contract ERC721Enumerable is ERC721 {
     function tokenOfOwnerByIndex(address owner, uint256 index)
         public
         view
+        override
         returns (uint256)
     {
         require(index < balanceOf(owner), "Owner index is out of bounds!");

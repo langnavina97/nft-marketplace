@@ -31,9 +31,9 @@ contract ERC721 is ERC165, IERC721 {
     constructor() {
         _registerInterface(
             bytes4(
-                keccak256(
-                    "balanceOf(bytes4)^ownerOf(bytes4)^transferFrom(bytes4)"
-                )
+                keccak256("balanceOf(bytes4)") ^
+                    keccak256("ownerOf(bytes4)") ^
+                    keccak256("transferFrom(bytes4)")
             )
         );
     }

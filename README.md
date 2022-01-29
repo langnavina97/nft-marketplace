@@ -14,3 +14,7 @@ C9: https://i.ibb.co/QQw3J8H/c9.png
 C10: https://i.ibb.co/Pwtnkzv/c10.png
 C11: https://i.ibb.co/8c1gNTk/c11.png
 
+Deploy the contract: 
+truffle migrate --reset
+
+Start application: npm run start

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 import detectEthereumProvider from '@metamask/detect-provider';
 import CryptoBird from '../abis/CryptoBirdz.json';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCardImage, MDBCardBtn, MDBBtn } from 'mdb-react-ui-kit';
+import './App.css';
 
 class App extends Component {
 
@@ -40,7 +42,7 @@ class App extends Component {
             this.setState({ totalSupply });
 
             // load crypto birdz
-            for (const i = 0; i < totalSupply; i++) {
+            for (let i = 0; i < totalSupply; i++) {
                 const cryptoBird = await contract.methods.cryptoBirdz(i).call();
                 this.setState({
                     cryptoBirdz: [...this.state.cryptoBirdz, cryptoBird]
@@ -76,7 +78,7 @@ class App extends Component {
 
     render() {
         return (
-            < div >
+            < div className='container-filled body'>
                 {console.log(this.state.cryptoBirdz)}
                 <nav className='navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow'>
                     <div className='navbar-brand col-sem-3 col-md-3 mr-0' style={{ color: 'white' }}>
@@ -108,6 +110,23 @@ class App extends Component {
                                 </form>
                             </div>
                         </main>
+                    </div>
+                    <hr></hr>
+                    <div className='row textCenter'>
+                        {this.state.cryptoBirdz.map((cryptoBird, key) => {
+                            return (
+                                <div>
+                                    <MDBCard className='token img' style={{ maxWidth: '22rem' }}>
+                                        <MDBCardImage src={cryptoBird} position='top' height={'250rem'} style={{ marginRight: '4px' }} />
+                                        <MDBCardBody>
+                                            <MDBCardTitle>CryptoBirdz</MDBCardTitle>
+                                            <MDBCardText>The Cryptobirdz are 20 uniquely generated CBirdz from the cyperpunk cloud galaxy Mystopial! There is only one of each bird and each bird can be owned by a single person the the Ethereum network.</MDBCardText>
+                                            <MDBBtn href={cryptoBird}>Download</MDBBtn>
+                                        </MDBCardBody>
+                                    </MDBCard>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div >
             </div >
